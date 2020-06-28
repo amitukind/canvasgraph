@@ -1,8 +1,17 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+// Register Mouse event handlers
 canvas.addEventListener("mousedown", mouseDown);
 canvas.addEventListener("mousemove", mouseMove);
 canvas.addEventListener("mouseup", mouseUp);
+canvas.addEventListener("mouseleave", mouseUp);
+
+// Register touch event handlers
+canvas.addEventListener('touchstart', touchDown, false);
+canvas.addEventListener('touchmove', touchMove, false);
+canvas.addEventListener('touchcancel', mouseUp, false);
+canvas.addEventListener('touchend', mouseUp, false);
+
 
 function drawGraph() {
     ctx.strokeStyle = "#000000";
@@ -108,21 +117,20 @@ var dragging = false;
 var offset = { x: 0, y: 0, x0: 0, y0: 0 };
 var draggedPoint = {};
 
-function mouseDown(e) {
+function inputDown(x, y) {
     for (var i in points) {
-        if (Math.pow(e.offsetX - points[i].x, 2) + Math.pow(e.offsetY - points[i].y, 2) < Math.pow(6, 2)) {
+        if (Math.pow(x - points[i].x, 2) + Math.pow(y - points[i].y, 2) < Math.pow(6, 2)) {
             draggedPoint = points[i];
-            offset = { x: draggedPoint.x, y: draggedPoint.y, x0: e.offsetX, y0: e.offsetY };
+            offset = { x: draggedPoint.x, y: draggedPoint.y, x0: x, y0: y };
             dragging = true;
             return;
         }
     }
 }
-
-function mouseMove(e) {
-    if (dragging && e.offsetX > 50 && e.offsetX <= 500 && e.offsetY >= 0 && e.offsetY < 450) {
-        var deltaX = e.offsetX - offset.x0;
-        var deltaY = e.offsetY - offset.y0;
+function inputMove(x, y) {
+    if (dragging && x > 50 && x <= 500 && y >= 0 && y < 450) {
+        var deltaX = x - offset.x0;
+        var deltaY = y - offset.y0;
 
         // Snapping
         if (Math.abs(deltaX) < 25) deltaX = 0;
@@ -138,6 +146,31 @@ function mouseMove(e) {
         drawLine(points[0], points[1]);
     }
 }
+
+function mouseDown(e) {
+    inputDown(e.offsetX, e.offsetY);
+}
+
+function mouseMove(e) {
+    inputMove(e.offsetX, e.offsetY);
+}
 function mouseUp() {
     dragging = false;
+}
+
+function touchDown(e) {
+    var touchCoordinates = getTouchPos(e);
+    inputDown(touchCoordinates.x, touchCoordinates.y);
+}
+
+function touchMove(e) {
+    var touchCoordinates = getTouchPos(e);
+    inputMove(touchCoordinates.x, touchCoordinates.y);
+}
+function getTouchPos(touchEvent) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: touchEvent.touches[0].clientX - rect.left,
+        y: touchEvent.touches[0].clientY - rect.top
+    };
 }
