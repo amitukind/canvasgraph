@@ -71,13 +71,29 @@ function drawLabel(point, name) {
     var label = (graphPoints.x > 0) ? name + pointsText : pointsText + name;
     ctx.font = "bold 15px Arial";
     if (graphPoints.x > 0) {
-        ctx.textAlign = 'left';
-        ctx.fillText(label, point.x + 10, point.y - 10);
-    }
+        if (graphPoints.x === 5) {
+            label = pointsText + name;
+            ctx.textAlign = 'right';
+            ctx.fillText(label, point.x - 15, point.y + 15);
+        }
+        else {
+            ctx.textAlign = 'left';
+            ctx.fillText(label, point.x + 5, point.y + 15);
+        }
 
+    }
     else {
-        ctx.textAlign = 'right';
-        ctx.fillText(label, point.x - 10, point.y + 10);
+        if (graphPoints.x === -4) {
+            label = name + pointsText;
+            ctx.textAlign = 'left';
+            ctx.fillText(label, point.x + 5, point.y + 15);
+        }
+        else {
+            ctx.textAlign = 'right';
+            ctx.fillText(label, point.x - 5, point.y + 15);
+        }
+
+
     }
 
 }
