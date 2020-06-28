@@ -3,10 +3,10 @@ var ctx = canvas.getContext("2d");
 canvas.addEventListener("mousedown", mouseDown);
 canvas.addEventListener("mousemove", mouseMove);
 canvas.addEventListener("mouseup", mouseUp);
-canvas.addEventListener("mouseleave", mouseUp);
 
 function drawGraph() {
     ctx.strokeStyle = "#000000";
+    ctx.textAlign = 'left';
     for (i = 50; i < 500; i += 50) {
         ctx.beginPath();
         ctx.lineWidth = i === 250 ? 3 : 1;
@@ -95,18 +95,28 @@ var draggedPoint = {};
 function mouseDown(e) {
     for (var i in points) {
         if (Math.pow(e.offsetX - points[i].x, 2) + Math.pow(e.offsetY - points[i].y, 2) < Math.pow(6, 2)) {
-            dragging = true;
             draggedPoint = points[i];
             offset = { x: draggedPoint.x, y: draggedPoint.y, x0: e.offsetX, y0: e.offsetY };
+            dragging = true;
             return;
         }
     }
 }
 
 function mouseMove(e) {
-    if (dragging) {
-        draggedPoint.x = e.offsetX - offset.x0 + offset.x;
-        draggedPoint.y = e.offsetY - offset.y0 + offset.y;
+    if (dragging && e.offsetX > 50 && e.offsetX <= 500 && e.offsetY >= 0 && e.offsetY < 450) {
+        var deltaX = e.offsetX - offset.x0;
+        var deltaY = e.offsetY - offset.y0;
+
+        // Snapping
+        if (Math.abs(deltaX) < 25) deltaX = 0;
+        if (Math.abs(deltaY) < 25) deltaY = 0;
+        if (Math.abs(deltaX) > 25) deltaX = deltaX < 0 ? -(50 + 50 * parseInt(Math.abs(deltaX) / 50)) : 50 + 50 * parseInt(Math.abs(deltaX) / 50);
+        if (Math.abs(deltaY) > 25) deltaY = deltaY < 0 ? -(50 + 50 * parseInt(Math.abs(deltaY) / 50)) : 50 + 50 * parseInt(Math.abs(deltaY) / 50);
+
+        //Applying Changes
+        draggedPoint.x = deltaX + offset.x;
+        draggedPoint.y = deltaY + offset.y;
         ctx.clearRect(0, 0, 500, 500);
         drawGraph();
         drawLine(points[0], points[1]);
