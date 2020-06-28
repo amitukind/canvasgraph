@@ -50,12 +50,27 @@ function drawLine(a, b) {
 function drawPoints(a, b) {
     ctx.fillStyle = "#000090";
     ctx.beginPath();
-    ctx.arc(a.x, a.y, 10, 0, 2 * Math.PI);
+    ctx.arc(a.x, a.y, 6, 0, 2 * Math.PI);
     ctx.fill();
     ctx.fillStyle = "#000090";
     ctx.beginPath();
-    ctx.arc(b.x, b.y, 10, 0, 2 * Math.PI);
+    ctx.arc(b.x, b.y, 6, 0, 2 * Math.PI);
     ctx.fill();
+    drawLabel(a, "A");
+    drawLabel(b, "B");
 }
 
-drawLine({ x: 1, y: 1 }, { x: 3, y: 2 });
+function drawLabel(point, name) {
+    var graphPoints = { x: (point.x - 250) / 50, y: (250 - point.y) / 50 }
+    var pointsText = "(" + graphPoints.x + "," + graphPoints.y + ")";
+
+
+    var label = (graphPoints.x > 0) ? name + pointsText : pointsText + name;
+    ctx.font = "bold 15px Arial";
+    if (graphPoints.x > 0)
+        ctx.fillText(label, point.x + 10, point.y - 10);
+    else
+        ctx.fillText(label, point.x - 65, point.y + 20);
+}
+
+drawLine({ x: -3, y: -1 }, { x: 1, y: 2 });
