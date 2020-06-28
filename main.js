@@ -1,7 +1,12 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+canvas.addEventListener("mousedown", mouseDown);
+canvas.addEventListener("mousemove", mouseMove);
+canvas.addEventListener("mouseup", mouseUp);
+canvas.addEventListener("mouseleave", mouseUp);
 
 function drawGraph() {
+    ctx.strokeStyle = "#000000";
     for (i = 50; i < 500; i += 50) {
         ctx.beginPath();
         ctx.lineWidth = i === 250 ? 3 : 1;
@@ -34,9 +39,7 @@ function drawGraph() {
 
 drawGraph();
 
-function drawLine(a, b) {
-    var pointA = { x: 250 + a.x * 50, y: 250 - a.y * 50 };
-    var pointB = { x: 250 + b.x * 50, y: 250 - b.y * 50 };
+function drawLine(pointA, pointB) {
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = "#000090";
@@ -67,10 +70,48 @@ function drawLabel(point, name) {
 
     var label = (graphPoints.x > 0) ? name + pointsText : pointsText + name;
     ctx.font = "bold 15px Arial";
-    if (graphPoints.x > 0)
+    if (graphPoints.x > 0) {
+        ctx.textAlign = 'left';
         ctx.fillText(label, point.x + 10, point.y - 10);
-    else
-        ctx.fillText(label, point.x - 65, point.y + 20);
+    }
+
+    else {
+        ctx.textAlign = 'right';
+        ctx.fillText(label, point.x - 10, point.y + 10);
+    }
+
 }
 
-drawLine({ x: -3, y: -1 }, { x: 1, y: 2 });
+
+var A = { x: 200, y: 300 };
+var B = { x: 350, y: 150 };
+var points = [A, B]
+drawLine(points[0], points[1]);
+
+var dragging = false;
+var offset = { x: 0, y: 0, x0: 0, y0: 0 };
+var draggedPoint = {};
+
+function mouseDown(e) {
+    for (var i in points) {
+        if (Math.pow(e.offsetX - points[i].x, 2) + Math.pow(e.offsetY - points[i].y, 2) < Math.pow(6, 2)) {
+            dragging = true;
+            draggedPoint = points[i];
+            offset = { x: draggedPoint.x, y: draggedPoint.y, x0: e.offsetX, y0: e.offsetY };
+            return;
+        }
+    }
+}
+
+function mouseMove(e) {
+    if (dragging) {
+        draggedPoint.x = e.offsetX - offset.x0 + offset.x;
+        draggedPoint.y = e.offsetY - offset.y0 + offset.y;
+        ctx.clearRect(0, 0, 500, 500);
+        drawGraph();
+        drawLine(points[0], points[1]);
+    }
+}
+function mouseUp() {
+    dragging = false;
+}
