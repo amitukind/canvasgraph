@@ -1,10 +1,11 @@
 A Simple HTML5 Canvas 2D Graph Demo with movable points.
+[Live Demo](http://amitukind.com/projects/canvasgraph/)
 1. Graph creation using canvas
 2. Points Drawing
 3. Points Dragging
 4. Snapping to graph lines
 
-![](images/poster.jpg)
+![](images/demo.gif)
 
 
 ## Usage
